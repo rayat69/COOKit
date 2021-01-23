@@ -1,26 +1,48 @@
-import logo from "./logo.svg";
+import { lazy, Suspense } from "react";
 import { app, app_logo, app_header, app_link } from "./App.module.scss";
+import Signup from "./components/Signup";
+import { Container, Spinner } from "react-bootstrap";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
+import { AuthProvider } from "./contexts/AuthContext";
+//import Dashboard from "./components/Dashboard";
+//import Login from "./components/Login";
+//import ForgotPassword from "./components/ForgotPassword";
+import PrivateRoute from "./components/PrivateRoute";
+
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const Login = lazy(() => import("./components/Login"));
+const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
 
 const App = () => {
   return (
-    <div className={app}>
-      {/* Modify this section from here */}
-      <header className={app_header}>
-        <img src={logo} className={app_logo} alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to see the magic.
-        </p>
-        <a
-          className={app_link}
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-      {/* all the way to here */}
-    </div>
+    <Container
+      className="d-flex align-items-center justify-content-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <div className="w-100" style={{ maxHeight: "400px" }}>
+        <Router>
+          <AuthProvider>
+            <Switch>
+              <Suspense
+                fallback={<Spinner animation="border" variant="secondary" />}
+              >
+                <PrivateRoute path="/" exact component={Dashboard} />
+                <Route path="/signup">
+                  <Signup />
+                </Route>
+                <Route path="/login">
+                  <Login />
+                </Route>
+                <Route path="/reset">
+                  <ForgotPassword />
+                </Route>
+              </Suspense>
+            </Switch>
+          </AuthProvider>
+        </Router>
+      </div>
+    </Container>
   );
 };
 
