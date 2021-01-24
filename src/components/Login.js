@@ -1,14 +1,24 @@
-import React, { useRef, useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import React, { useRef, useState, Suspense } from "react";
+import { Form, Button, Card, Alert, Spinner } from "react-bootstrap";
 import { useHistory, Link } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
+
+//const MatButton = React.lazy(() =>
+const MatButton = React.lazy(() => import("./CustomButtons/Button"));
+//);
 
 const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
 
-  const { login, googleLogin, facebookLogin, currentUser } = useAuth();
+  const {
+    login,
+    googleLogin,
+    facebookLogin,
+    twitterLogin,
+    currentUser,
+  } = useAuth();
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,8 +51,9 @@ const Login = () => {
       console.log(user);
       console.log(currentUser);
       history.push("/");
-    } catch {
-      setError("Failed to Login, email or password doesn't exist");
+    } catch (e) {
+      setError(e.message);
+      console.log(e);
     }
     setLoading(false);
   };
@@ -58,9 +69,28 @@ const Login = () => {
       console.log(result);
       console.log(user);
       console.log(currentUser);
-      //history.push("/");
-    } catch {
-      setError("Failed to Login, email or password doesn't exist");
+      history.push("/");
+    } catch (e) {
+      setError(e.message);
+      console.log(e);
+    }
+    setLoading(false);
+  };
+
+  const handletwitterLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      setError("");
+      setLoading(true);
+      const result = await twitterLogin();
+      const user = await result.user;
+      console.log(result);
+      console.log(user);
+      console.log(currentUser);
+      history.push("/");
+    } catch (e) {
+      setError(e.message);
     }
     setLoading(false);
   };
@@ -83,15 +113,48 @@ const Login = () => {
             <Button disabled={loading} type="submit" className="w-100">
               Log In
             </Button>
-            <Button variant="success" disabled={loading} onClick={handleGoogleLogin} className="w-50 mt-3">
-              Google
-            </Button>
-            <Button variant="info" disabled={loading} onClick={handleFacebookLogin} className="w-50 mt-3">
-              Facebook
-            </Button>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <Suspense
+                fallback={<Spinner animation="border" variant="secondary" />}
+              >
+                <MatButton
+                  onClick={handleGoogleLogin}
+                  size="lg"
+                  justIcon
+                  round
+                  color="google"
+                >
+                  <i className={"fab fa-google"} />
+                </MatButton>
+                <MatButton
+                  onClick={handleFacebookLogin}
+                  size="lg"
+                  justIcon
+                  round
+                  color="facebook"
+                >
+                  <i className={"fab fa-facebook-f"} />
+                </MatButton>
+                <MatButton
+                  onClick={handletwitterLogin}
+                  size="lg"
+                  justIcon
+                  round
+                  color="twitter"
+                >
+                  <i className={"fab fa-twitter"} />
+                </MatButton>
+              </Suspense>
+            </div>
           </Form>
           <div className="w-100 text-center mt-3">
-              <Link to="/reset">Forgot Password?</Link>
+            <Link to="/reset">Forgot Password?</Link>
           </div>
         </Card.Body>
       </Card>

@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { app, app_logo, app_header, app_link } from "./App.module.scss";
 import Signup from "./components/Signup";
 import { Container, Spinner } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";

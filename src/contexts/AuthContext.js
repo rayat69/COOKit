@@ -35,6 +35,11 @@ export const AuthProvider = ({ children }) => {
     return auth.signInWithPopup(provider);
   };
 
+  const twitterLogin = () => {
+    var provider = new firebase.auth.TwitterAuthProvider();
+    return auth.signInWithPopup(provider);
+  };
+
   const logout = () => {
     return auth.signOut();
   };
@@ -57,6 +62,7 @@ export const AuthProvider = ({ children }) => {
     login,
     googleLogin,
     facebookLogin,
+    twitterLogin,
     logout,
     resetPassword,
   };
